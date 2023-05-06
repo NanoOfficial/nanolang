@@ -1,5 +1,5 @@
 /**
- * @file errors.rs
+ * @file error
  * @author Krisna Pranav
  * @brief Errors[Decode]
  * @version 0.1

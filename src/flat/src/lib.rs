@@ -8,3 +8,4 @@
  * @copyright Copyright (c) 2023 Krisna Pranav, NanoBlocksDevelopers
  *
  */
+mod decode;
