@@ -1,0 +1,8 @@
+[workspace]
+members = ["src/*"]
+
+[profile.release]
+strip = true
+
+[workspace.metadata.release]
+shared-version = true
