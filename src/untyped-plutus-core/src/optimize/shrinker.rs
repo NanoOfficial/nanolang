@@ -42,7 +42,7 @@ impl Program<Name> {
             let default_func: DefaultFunction = default_func_index.try_into().unwrap();
 
             term = term
-                .lambda(format!("__{}_wrapped", default_func.aiken_name()))
+                .lambda(format!("__{}_wrapped", default_func.nano_name()))
                 .apply(if default_func.force_count() == 1 {
                     Term::Builtin(default_func).force()
                 } else {
@@ -97,7 +97,7 @@ fn builtin_force_reduce(term: &mut Term<Name>, builtin_map: &mut IndexMap<u8, ()
                         builtin_map.insert(*func as u8, ());
                         *term = Term::Var(
                             Name {
-                                text: format!("__{}_wrapped", func.aiken_name()),
+                                text: format!("__{}_wrapped", func.nano_name()),
                                 unique: 0.into(),
                             }
                             .into(),
@@ -109,7 +109,7 @@ fn builtin_force_reduce(term: &mut Term<Name>, builtin_map: &mut IndexMap<u8, ()
                     builtin_map.insert(*func as u8, ());
                     *term = Term::Var(
                         Name {
-                            text: format!("__{}_wrapped", func.aiken_name()),
+                            text: format!("__{}_wrapped", func.nano_name()),
                             unique: 0.into(),
                         }
                         .into(),
