@@ -26,7 +26,7 @@ impl Interner {
     pub fn new() -> Self {
         Interner {
             identifiers: HashMap::new(),
-            current: Unique::new(0)
+            current: Unique::new(0),
         }
     }
 
@@ -42,24 +42,35 @@ impl Interner {
             }
             Term::Delay(term) => self.term(Rc::make_mut(term)),
             Term::Lambda {
-                paramter_name,
+                parameter_name,
                 body,
             } => {
-                let paramter_name = Rc::make_mut(paramter_name);
-                paramter_name.unique = self.intern(&paramter_name.text);
+                let parameter_name = Rc::make_mut(parameter_name);
+                parameter_name.unique = self.intern(&parameter_name.text);
                 self.term(Rc::make_mut(body));
             }
-        }
-
-        fn intern(&mut self, text: &str) -> Unique {
-            if let Some(u) = self.identifiers.get(text) {
-                *u
-            } else {
-                let unique = self.current;
-                self.identifiers.insert(text.to_string(), unique);
-                self.current.increment();
-                unique
+            Term::Apply { function, argument } => {
+                self.term(Rc::make_mut(function));
+                self.term(Rc::make_mut(argument));
             }
+            Term::Constant(_) => (),
+            Term::Force(term) => self.term(Rc::make_mut(term)),
+            Term::Error => (),
+            Term::Builtin(_) => (),
+        }
+    }
+
+    fn intern(&mut self, text: &str) -> Unique {
+        if let Some(u) = self.identifiers.get(text) {
+            *u
+        } else {
+            let unique = self.current;
+
+            self.identifiers.insert(text.to_string(), unique);
+
+            self.current.increment();
+
+            unique
         }
     }
 }
