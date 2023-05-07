@@ -16,7 +16,7 @@ strum = "0.24.1"
 thiserror = "1.0.39"
 vec1 = "1.10.1"
 
-untyped-plutus-core = { path = '../untyped-plutus-core', version = "0.1.0" }
+untyped_plutus_core = { path = '../untyped_plutus_core', version = "0.1.0" }
 
 [dev-dependencies]
 indoc = "2.0.1"
