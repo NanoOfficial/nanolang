@@ -16,7 +16,7 @@ use crate::{
 
 pub mod shrinker;
 
-pub fn aiken_optimize_and_intern(program: Program<Name>) -> Program<Name> {
+pub fn nano_optimize_and_intern(program: Program<Name>) -> Program<Name> {
     let mut program = program.builtin_force_reduce();
 
     let mut interner = Interner::new();
