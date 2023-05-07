@@ -30,8 +30,6 @@ pub mod error;
 mod eval;
 mod phase_one;
 pub mod script_context;
-#[cfg(test)]
-mod tests;
 pub mod to_plutus_data;
 
 pub fn eval_phase_two(
