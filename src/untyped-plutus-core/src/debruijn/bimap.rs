@@ -15,7 +15,7 @@ use super::Level;
 #[derive(Debug)]
 pub struct BiMap {
     left: HashMap<Unique, Level>,
-    right: HashMap<Level, Unique>
+    right: HashMap<Level, Unique>,
 }
 
 impl BiMap {
@@ -36,7 +36,11 @@ impl BiMap {
         self.right.remove(&level);
     }
 
-    pub(super) fn get(&self, unique: &Unique) -> Option<Level> {
+    pub(super) fn get(&self, unique: &Unique) -> Option<&Level> {
         self.left.get(unique)
+    }
+
+    pub(super) fn get_right(&self, level: &Level) -> Option<&Unique> {
+        self.right.get(level)
     }
 }
