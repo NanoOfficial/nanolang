@@ -1178,7 +1178,7 @@ fn suggest_import_constructor() -> String {
 
            You must import its constructors explicitly to use them, or prefix them with the module's name.
 
-             ┍━ foo.ak ━━━━━━━━
+             ┍━ foo.na ━━━━━━━━
              │ {keyword_use} nano/pet.{{{type_Pet}, {variant_Dog}}}
              │
              │ {keyword_fn} foo(pet : {type_Pet}) {{
@@ -1393,7 +1393,7 @@ pub enum Warning {
     #[diagnostic(help("{}", formatdoc! {
         r#"No big deal, but you might want to remove it to get rid of that warning.
 
-           You should also know that, unlike in typical imperative languages, unused let-bindings are {fully_ignored} in Aiken.
+           You should also know that, unlike in typical imperative languages, unused let-bindings are {fully_ignored} in nano.
            They will not produce any side-effect (such as error calls). Programs with or without unused variables are semantically equivalent.
 
            If you do want to enforce some side-effects, use {keyword_expect} instead of {keyword_let}.
@@ -1432,7 +1432,7 @@ pub enum Warning {
     #[diagnostic(help("{}", formatdoc! {
         r#"When you specify a {type_ByteArray} literal using plain double-quotes, it's interpreted as an array of UTF-8 bytes. For example, the literal {literal_foo} is interpreted as the byte sequence {foo_bytes}.
 
-           However here, you have specified a literal that resembles a hash digest encoded as an hexadecimal string. This is a common case, but you probably want to capture the raw bytes represented by this sequence, and not the hexadecimal sequence. Fear not! Aiken provides a convenient syntax for that: just prefix the literal with {symbol_hash}. This will decode the hexadecimal string for you and capture the non-encoded bytes as a {type_ByteArray}.
+           However here, you have specified a literal that resembles a hash digest encoded as an hexadecimal string. This is a common case, but you probably want to capture the raw bytes represented by this sequence, and not the hexadecimal sequence. Fear not! nano provides a convenient syntax for that: just prefix the literal with {symbol_hash}. This will decode the hexadecimal string for you and capture the non-encoded bytes as a {type_ByteArray}.
 
            ╰─▶ {symbol_hash}{value}
         "#,
