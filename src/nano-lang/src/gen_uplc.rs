@@ -19,7 +19,7 @@ use untyped_plutus_core::{
     builder::{CONSTR_FIELDS_EXPOSER, CONSTR_GET_FIELD, CONSTR_INDEX_EXPOSER, EXPECT_ON_LIST},
     builtins::DefaultFunction,
     machine::cost_model::ExBudget,
-    optimize::aiken_optimize_and_intern,
+    optimize::nano_optimize_and_intern,
     parser::interner::Interner,
 };
 
@@ -214,15 +214,8 @@ impl<'a> CodeGenerator<'a> {
             term,
         };
 
-        program = aiken_optimize_and_intern(program);
+        program = nano_optimize_and_intern(program);
 
-        // This is very important to call here.
-        // If this isn't done, re-using the same instance
-        // of the generator will result in free unique errors
-        // among other unpredictable things. In fact,
-        // switching to a shared code generator caused some
-        // instability issues and we fixed it by placing this
-        // method here.
         self.reset();
 
         program
