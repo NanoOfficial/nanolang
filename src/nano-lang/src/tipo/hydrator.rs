@@ -9,6 +9,7 @@
 */
 
 use std::{collections::HashMap, sync::Arc};
+
 use crate::{
     ast::Annotation,
     builtins::{function, tuple},
@@ -22,7 +23,7 @@ use super::{
 };
 
 #[derive(Debug)]
-pub struct hydrator {
+pub struct Hydrator {
     created_type_variables: HashMap<String, Arc<Type>>,
     rigid_type_names: HashMap<u64, String>,
     permit_new_type_variables: bool,
@@ -49,6 +50,62 @@ impl Hydrator {
         }
     }
 
+    pub fn open_new_scope(&mut self) -> ScopeResetData {
+        let created_type_variables = self.created_type_variables.clone();
+        let rigid_type_names = self.rigid_type_names.clone();
+
+        ScopeResetData {
+            created_type_variables,
+            rigid_type_names,
+        }
+    }
+
+    pub fn close_scope(&mut self, data: ScopeResetData) {
+        self.created_type_variables = data.created_type_variables;
+        self.rigid_type_names = data.rigid_type_names;
+    }
+
+    pub fn disallow_new_type_variables(&mut self) {
+        self.permit_new_type_variables = false
+    }
+
+    pub fn is_rigid(&self, id: &u64) -> bool {
+        self.rigid_type_names.contains_key(id)
+    }
+
+    pub fn rigid_names(&self) -> HashMap<u64, String> {
+        self.rigid_type_names.clone()
+    }
+
+    pub fn type_from_option_annotation(
+        &mut self,
+        ast: &Option<Annotation>,
+        environment: &mut Environment,
+    ) -> Result<Arc<Type>, Error> {
+        match ast {
+            Some(ast) => self.type_from_annotation(ast, environment),
+            None => Ok(environment.new_unbound_var()),
+        }
+    }
+
+    pub fn type_from_annotation(
+        &mut self,
+        annotation: &Annotation,
+        environment: &mut Environment,
+    ) -> Result<Arc<Type>, Error> {
+        let mut unbounds = vec![];
+        let tipo = self.do_type_from_annotation(annotation, environment, &mut unbounds)?;
+
+        if let Some(location) = unbounds.last() {
+            environment.warnings.push(Warning::UnexpectedTypeHole {
+                location: **location,
+                tipo: tipo.clone(),
+            });
+        }
+
+        Ok(tipo)
+    }
+
     fn do_type_from_annotation<'a>(
         &mut self,
         annotation: &'a Annotation,
@@ -60,13 +117,108 @@ impl Hydrator {
                 location,
                 module,
                 name,
-                arguments: args 
+                arguments: args,
             } => {
                 let mut argument_types = Vec::with_capacity(args.len());
                 for t in args {
                     let typ = self.do_type_from_annotation(t, environment, unbounds)?;
-                    
+                    argument_types.push((t.location(), typ));
                 }
+
+                let TypeConstructor {
+                    parameters,
+                    tipo: return_type,
+                    ..
+                } = environment
+                    .get_type_constructor(module, name, *location)?
+                    .clone();
+
+                if module.is_none() {
+                    environment.increment_usage(name);
+                }
+
+                if args.len() != parameters.len() {
+                    return Err(Error::IncorrectTypeArity {
+                        location: *location,
+                        name: name.to_string(),
+                        expected: parameters.len(),
+                        given: args.len(),
+                    });
+                }
+
+                let mut type_vars = HashMap::new();
+                #[allow(clippy::needless_collect)] 
+                let parameter_types: Vec<_> = parameters
+                    .into_iter()
+                    .map(|typ| environment.instantiate(typ, &mut type_vars, self))
+                    .collect();
+
+                let return_type = environment.instantiate(return_type, &mut type_vars, self);
+
+                for (parameter, (location, argument)) in
+                    parameter_types.into_iter().zip(argument_types)
+                {
+                    environment.unify(parameter, argument, location, false)?;
+                }
+
+                Ok(return_type)
+            }
+
+            Annotation::Fn { arguments, ret, .. } => {
+                let mut args = Vec::with_capacity(arguments.len());
+
+                for arg in arguments {
+                    let arg = self.do_type_from_annotation(arg, environment, unbounds)?;
+
+                    args.push(arg);
+                }
+
+                let ret = self.do_type_from_annotation(ret, environment, unbounds)?;
+
+                Ok(function(args, ret))
+            }
+
+            Annotation::Var { name, location, .. } => match self.created_type_variables.get(name) {
+                Some(var) => Ok(var.clone()),
+
+                None if self.permit_new_type_variables => {
+                    let var = environment.new_generic_var();
+
+                    self.rigid_type_names
+                        .insert(environment.previous_uid(), name.clone());
+
+                    self.created_type_variables
+                        .insert(name.clone(), var.clone());
+
+                    Ok(var)
+                }
+
+                None => Err(Error::UnknownType {
+                    name: name.to_string(),
+                    location: *location,
+                    types: environment
+                        .module_types
+                        .keys()
+                        .map(|t| t.to_string())
+                        .collect(),
+                }),
+            },
+
+            Annotation::Hole { location, .. } => {
+                unbounds.push(location);
+                Ok(environment.new_unbound_var())
+            }
+
+            Annotation::Tuple { elems, .. } => {
+                let mut typed_elems = vec![];
+
+                for elem in elems {
+                    let typed_elem = self.do_type_from_annotation(elem, environment, unbounds)?;
+
+                    typed_elems.push(typed_elem)
+                }
+
+                Ok(tuple(typed_elems))
             }
         }
     }
