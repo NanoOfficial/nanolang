@@ -2,12 +2,11 @@
  * @file extra.rs
  * @author Krisna Pranav
  * @version 0.1
- * @date 2023-05-06
+ * @date 2023-05-11
  *
  * @copyright Copyright (c) 2023 Krisna Pranav, NanoBlocksDevelopers
  *
 */
-
 
 use crate::ast::Span;
 use std::iter::Peekable;
@@ -28,10 +27,9 @@ impl ModuleExtra {
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Comment<'a> {
-    pub start: usize, 
+    pub start: usize,
     pub content: &'a str,
 }
-
 
 impl<'a> From<(&Span, &'a str)> for Comment<'a> {
     fn from(src: (&Span, &'a str)) -> Comment<'a> {
@@ -47,4 +45,23 @@ impl<'a> From<(&Span, &'a str)> for Comment<'a> {
             content: src.1.get(start..end).expect("From span to comment"),
         }
     }
+}
+
+pub fn comments_before<'a>(
+    comment_spans: &mut Peekable<impl Iterator<Item = &'a Span>>,
+    byte: usize,
+    src: &'a str,
+) -> Vec<&'a str> {
+    let mut comments = vec![];
+    while let Some(Span { start, .. }) = comment_spans.peek() {
+        if start <= &byte {
+            let comment = comment_spans
+                .next()
+                .expect("Comment before accessing next span");
+            comments.push(Comment::from((comment, src)).content)
+        } else {
+            break;
+        }
+    }
+    comments
 }
