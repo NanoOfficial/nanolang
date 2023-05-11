@@ -22,11 +22,14 @@ Nano Smart Contracts Language
 $ cargo install --git https://github.com/NanoOfficial/nanolang.git
 ```
 
-## Learn nanolang from basics:
+## Learn nano-lang from basics:
 - Learn nanolang from the official [website]()
 
 # Contributing:
 - nanolang is an open-source project check out the coding style and other helper documentation from the [CONTRIBUTING.md]()
+
+# Author:
+- nano-lang is created by @[krishpranav](https://github.com/krishpranav)
 
 # License:
 - nanolang is licensed under MIT-License
