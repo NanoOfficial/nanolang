@@ -172,7 +172,7 @@ impl Printer {
 
 fn qualify_type_name(module: &String, typ_name: &str) -> Document<'static> {
     if module.is_empty() {
-        docvec!["aiken.", Document::String(typ_name.to_string())]
+        docvec!["nano.", Document::String(typ_name.to_string())]
     } else {
         Document::String([module, typ_name].join("."))
     }
