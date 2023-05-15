@@ -1,13 +1,3 @@
-/**
- * @file error.rs
- * @author Krisna Pranav
- * @version 0.1
- * @date 2023-05-06
- *
- * @copyright Copyright (c) 2023 Krisna Pranav, NanoBlocksDevelopers
- *
-*/
-
 use super::Type;
 use crate::{
     ast::{Annotation, BinOp, CallArg, Span, UntypedPattern},

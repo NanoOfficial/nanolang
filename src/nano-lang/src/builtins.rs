@@ -21,7 +21,7 @@ use crate::{
 use indexmap::IndexMap;
 use std::{cell::RefCell, collections::HashMap, sync::Arc};
 use strum::IntoEnumIterator;
-use uplc::builtins::DefaultFunction;
+use untyped_plutus_core::builtins::DefaultFunction;
 
 pub const BYTE_ARRAY: &str = "ByteArray";
 pub const BOOL: &str = "Bool";

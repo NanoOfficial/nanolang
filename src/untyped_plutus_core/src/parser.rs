@@ -9,8 +9,6 @@
 */
 
 use std::{ops::Neg, rc::Rc, str::FromStr};
-
-
 use crate::{
     ast::{Constant, Name, Program, Term, Type},
     builtins::DefaultFunction,

@@ -8,19 +8,7 @@
  *
 */
 
-//! This module implements the functionality described in
-//! ["Strictly Pretty" (2000) by Christian Lindig][0], with a few
-//! extensions.
-//!
-//! This module is heavily influenced by Elixir's Inspect.Algebra and
-//! JavaScript's Prettier.
-//!
-//! [0]: http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.34.2200
-//!
-//! ## Extensions
-//!
-//! - `ForcedBreak` from Elixir.
-#![allow(clippy::wrong_self_convention)]
+#[allow(clippy::wrong_self_convention)]
 
 use std::collections::VecDeque;
 

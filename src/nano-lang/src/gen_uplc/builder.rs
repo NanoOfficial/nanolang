@@ -11,7 +11,7 @@
 use std::{rc::Rc, sync::Arc};
 use indexmap::{IndexMap, IndexSet};
 use itertools::Itertools;
-use uplc::{
+use untyped_plutus_core::{
     ast::{Constant as UplcConstant, Name, Term, Type as UplcType},
     builder::{CONSTR_FIELDS_EXPOSER, CONSTR_INDEX_EXPOSER},
     builtins::DefaultFunction,
